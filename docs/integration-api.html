@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AwdPay API Documentation - Token Integration</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
+  <link href="/static/app.css" rel="stylesheet">
+  <script>
+const axios = require('axios');
+
+const clientId = "2jWDmLlD7GESfoaqOQrSW5StklG28IHM";
+const clientSecret = "v5CyFUfBJCRVl7eZ1K1LFxn5m1wcFwh5Ac76OFujokwB";
+const authString = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
+
+axios.post('https://api.orange.com/oauth/v2/token', 'grant_type=client_credentials', {
+  headers: {
+    'Authorization': `Basic ${authString}`,
+    'Content-Type': 'application/x-www-form-urlencoded'
+  }
+})
+.then(response => {
+  console.log(response.data); // Contiendra l'access_token et sa durée de validité
+})
+.catch(error => {
+  console.error(error);
+});
+  </script>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+      <a class="navbar-brand" href="#">
+        <img class="d-block mx-auto" src="https://www.awdpay.com/api/public/logo-1655717095382-127474816.png" alt="" height="40" >
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="/">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="/api">Documentation</a>
+          </li>
+        </ul>
+        <div><a type="button" class="btn btn-primary" href="/agent">Dashboard</a></div>
+      </div>
+    </div>
+  </nav>
+  <div class="container">
+    <div class="row">
+      <aside class="col-lg-3 mt-3">
+        <ul class="nav flex-column nav-pills">
+          <p class="list-group">Prerequisite</p>
+          <li class="nav-item active" role="tab" data-bs-toggle="pill" data-bs-target="#item1" href="#">Introduction</li>
+          <li class="nav-item" role="tab" data-bs-toggle="pill" data-bs-target="#item2" href="#">Generate Token</li>
+          <li class="nav-item" role="tab" data-bs-toggle="pill" data-bs-target="#item12" href="#">Currency list</li>
+          <p class="list-group">Deposit</p>
+          <li class="nav-item" role="tab" data-bs-toggle="pill" data-bs-target="#item3" href="#">Gateway List</li>
+          <li class="nav-item" role="tab" data-bs-toggle="pill" data-bs-target="#item4" href="#" tabindex="-1" aria-disabled="true">Add Money</li>
+          <li class="nav-item" role="tab" data-bs-toggle="pill" data-bs-target="#item13" href="#" tabindex="-1" aria-disabled="true">Add Money Confirmation</li>
+          <li class="nav-item" role="tab" data-bs-toggle="pill" data-bs-target="#item5" href="#" tabindex="-1" aria-disabled="true">Add Money Status</li>
+          <li class="nav-item" role="tab" data-bs-toggle="pill" data-bs-target="#item6" href="#" tabindex="-1" aria-disabled="true">Add Money List</li>
+          <p class="list-group">Withdraw</p>
+          <li class="nav-item" role="tab" data-bs-toggle="pill" data-bs-target="#item7" href="#">Method List</li>
+          <li class="nav-item" role="tab" data-bs-toggle="pill" data-bs-target="#item8" href="#">Withdraw money</li>
+          <li class="nav-item" role="tab" data-bs-toggle="pill" data-bs-target="#item9" href="#">Withdraw money Status</li>
+          <li class="nav-item" role="tab" data-bs-toggle="pill" data-bs-target="#item10" href="#">Withdraw money List</li>
+          <p class="list-group">Transfer</p>
+          <li class="nav-item" role="tab" data-bs-toggle="pill" data-bs-target="#item11" href="#">Transfer money</li>
+        </ul>
+      </aside>
+      <main class="col-lg-9">
+        <div class="tab-content py-2">
+          <div class="tab-pane fade show active" id="item1" role="tabpanel">
+            <h1>Introduction</h1>
+            <p>This documentation is intended for merchants who already have an account validated by Awdpay.</p>
+            <p><a href="https://www.awdpay.com/login">You can access and check your Awdpay account here </a></p>
+            <p>You need to use an API Key and API Secret from your account under the "settings" menu. To generate this information, simply click the "generate" button.</p>
+            <p>First, you need to conduct your integration tests on our sandbox platform: <a href="http://sandbox.awdpay.com">HERE</a>. The sandbox mode has been created to help you familiarize yourself with our API. Please be aware that all transactions done on the sandbox send data to our partners and consume real money.</p>
+            <p>Once you are ready, you can switch to production mode and perform real transactions with your customers.</p>
+          </div>
+          <div class="tab-pane fade" id="item2" role="tabpanel">
+            <h1>Generate Token</h1>
+            <p>This operation is used to create an access token which can then be used to authorize and authenticate towards the other end-points of the API.</p>
+            <h2>Request</h2>
+            <p>
+              Request URL: <span class="badge text-bg-dark">https://www.awdpay.com/api/v1/token</span>
+              <br>
+              Method: <span class="badge text-bg-danger">POST</span>
+              <br>
+            </p>
+            <p class="h4">Headers</p>
+            <table class="table table-striped">
+              <thead class="table-dark">
+                <td>NAME</td>
+                <td>DESCRIPTION</td>
+              </thead>
+              <tr>
+                <td>Authorization</td>
+                <td>Basic authentication header containing API user ID and API key. Should be sent in as B64 encoded.</td>
+              </tr>
+            </table>
+            <p class="h4">Exemple (curl)</p>
+            <pre><code>curl --request POST \
+  --url https://www.awdpay.com/api/v1/token \
+  --header 'Authorization: Basic [userkey:secretkey]'</code></pre>
+            <ul>
+            <li>[userkey] generate from your customer area on awdpay.com</li>
+            <li>[secretkey] generate from your customer area on awdpay.com</li>
+            </ul>
+            <h2>Responses</h2>
+            <p class="h4">200 OK</p>
+            <pre><code>{
+  "access_token": "string",
+  "token_type": "string",
+  "expires_in": 0
+}</code></pre>
+            <p class="h4">401 Unauthorized</p>
+            <pre><code>{
+  "message": "string"
+}</code></pre>
+            <p class="h4">500 Internal Server Error</p>
+            <pre><code></code></pre>
+          </div>
+          <div class="tab-pane fade" id="item3" role="tabpanel">
+            <h1>Gateway List</h1>
+            <p>This operation is used to get the list of gateway with their corresponding value. Value to be used for request a deposit</p>
+            <h2>Request</h2>
+            <p>
+              Request URL: <span class="badge text-bg-dark">https://www.awdpay.com/api/v1/gateways</span>
+              <br>
+              Method: <span class="badge text-bg-info">GET</span>
+              <br>
+            </p>
+            <p class="h4">Headers</p>
+            <table class="table table-striped">
+              <thead class="table-dark">
+                <td>NAME</td>
+                <td>DESCRIPTION</td>
+              </thead>
+              <tr>
+                <td>Authorization</td>
+                <td>Authorization header used for oauth. Format of the header parameter follows the standard for Bearer. Oauth uses Bearer authentication type where the credential is the received access token.</td>
+              </tr>
+            </table>
+            <p class="h4">Exemple (curl)</p>
+            <pre><code>curl --request GET \
+  --url https://www.awdpay.com/api/v1/gateways \
+  --header 'Authorization: Bearer [token_access]'</code></pre>
+            <ul>
+            <li>[token_access] from generate token api</li>
+            </ul>
+            <h2>Responses</h2>
+            <p class="h4">200 OK</p>
+            <pre><code>{
+  "data": [
+    {
+      "id": integer,
+      "name": string,
+      "value": string,
+      "isCrypto": bool,
+      "active": bool,
+      "isExchangePayment": bool,
+      "supportedCurrencies": array,
+      "supportedCountries": array
+    }
+  ],
+  "count": integer
+}</code></pre>
+            <p class="h4">401 Unauthorized</p>
+            <pre><code>{
+  "message": "string"
+}</code></pre>
+            <p class="h4">500 Internal Server Error</p>
+            <pre><code></code></pre>
+          </div>
+          <div class="tab-pane fade" id="item4" role="tabpanel">
+            <h1>Add Money</h1>
+            <p>This operation is used to add money in your awdpay account.</p>
+            <div class="warning">
+              <h2>Warning - Special methods</h2>
+              <p><strong>PerfectMoney method:</strong></p>
+              <p>Using PerfectMoney method, the API will return an url (aka: redirectURL) and an object (aka: redirectObject). Once received, you need to POST request to this url and give the object as data. Your customer will be redirected to perfectMoney paiement.</p>
+              <br>
+              <p><strong>Moov and Orange method:</strong></p>
+              <p>Using one of those methods, the API will return a data (aka: extra) and an instruction (aka: instruction). Once received, your customer need to follow the instruction to generate a OTP code. This OTP code + extra need to be forward to use using our Confirmation Api.</p>
+              <br>
+            </div>
+            <h2>Request</h2>
+            <p>
+              Request URL: <span class="badge text-bg-dark">https://www.awdpay.com/api/v1/deposits</span>
+              <br>
+              Method: <span class="badge text-bg-danger">POST</span>
+              <br>
+            </p>
+            <p class="h4">Headers</p>
+            <table class="table table-striped">
+              <thead class="table-dark">
+                <td>NAME</td>
+                <td>DESCRIPTION</td>
+              </thead>
+              <tr>
+                <td>Authorization</td>
+                <td>Authorization header used for oauth. Format of the header parameter follows the standard for Bearer. Oauth uses Bearer authentication type where the credential is the received access token.</td>
+              </tr>
+            </table>
+            <p class="h4">Body Parameters (Updated)</p>
+            <table class="table table-striped">
+              <thead class="table-dark">
+                <td>NAME</td>
+                <td>TYPE</td>
+                <td>MANDATORY</td>
+                <td>DESCRIPTION</td>
+              </thead>
+              <tr>
+                <td>payment_method</td>
+                <td>integer</td>
+                <td>Yes</td>
+                <td>ID from gateway api</td>
+              </tr>
+              <tr>
+                <td>amount</td>
+                <td>number</td>
+                <td>Yes</td>
+                <td>amount to be sent</td>
+              </tr>
+              <tr>
+                <td>currency</td>
+                <td>string</td>
+                <td>Yes</td>
+                <td>the currency for the transaction</td>
+                <td>string</td>
+                <td>Yes</td>
+                <td>a value compatible with the payment method choosen</td>
+              </tr>
+              <tr>
+                <td>country</td>
+                <td>string</td>
+                <td>No, under condition</td>
+                <td>ISO3166-1-Alpha-2, a value compatible with the payment method choosen. This parameter is mandatory for mtn method <br>Ref: https://github.com/datasets/country-codes/blob/master/data/country-codes.csv ("ISO3166-1-Alpha-2" column)</td>
+              </tr>
+              <tr>
+                <td>customer</td>
+                <td>string</td>
+                <td>Yes</td>
+                <td>email or phone number of your customer. It's used for transaction verification on your side.</td>
+              </tr>
+              <tr>
+                <td>number</td>
+                <td>string</td>
+                <td>No, under condition</td>
+                <td>For MTN, phone number with country code and without +. For other method, phone number without country code and +.<br>For ref: https://github.com/datasets/country-codes/blob/master/data/country-codes.csv (get country code on "Dial" column</td>
+              </tr>
+              <tr>
+                <td>agentId</td>
+                <td>integer</td>
+                <td>No, under condition</td>
+                <td>id of a select agent. This parameter is mandatory for agent method</td>
+              </tr>
+              <tr>
+                <td>agentInHand</td>
+                <td>boolean</td>
+                <td>No, under condition</td>
+                <td>agent do transaction in direct. This parameter is mandatory for agent method</td>
+              </tr>
+              <tr>
+                <td>return_url</td>
+                <td>string</td>
+                <td>No, under condition</td>
+                <td>url to redirect after customer successufly pay on payment method website. This parameter is mandatory for paypal, coinbase, perfectmoney method</td>
+              </tr>
+              <tr>
+                <td>cancel_url</td>
+                <td>string</td>
+                <td>No, under condition</td>
+                <td>url to redirect after customer cancel paymebt on payment method website. This parameter is mandatory for paypal, coinbase, perfectmoney method</td>
+              </tr>
+            </table>
+            <p class="h4">Exemple (curl)</p>
+            <pre><code>curl --request POST \
+  --url https://www.awdpay.com/api/v1/deposits \
+  --header 'Authorization: Bearer [token_access]' \
+  --header 'Content-Type: application/x-www-form-urlencoded' \
+  --data payment_method=mtn \
+  --data amount=200 \
+  --data currency=XOF \
+  --data country=CI \
+  --data number=2250748672248</code></pre>
+            <ul>
+            <li>[token_access] from generate token api</li>
+            </ul>
+            <h2>Responses</h2>
+            <p class="h4">200 OK (Updated)</p>
+            <pre><code>{
+  "status": string,
+  "payment_status": bool,
+  "id": integer,
+  "payment_method": string,
+  "amount": number,
+  "depositAmount": number,
+  "userId": integer,
+  "currency": string,
+  "updatedAt": date,
+  "createdAt": date,
+  "redirect": string,
+  "extra": string //only for some gateways
+  "instruction": string //only for some gateways
+}</code></pre>
+            <p class="h4">400 Bad Request (Updated)</p>
+            <pre><code>{
+  "message": "string"
+}</code></pre>
+            <p class="h4">401 Unauthorized (Updated)</p>
+            <pre><code>{
+  "message": "string"
+}</code></pre>
+            <p class="h4">500 Internal Server Error (Updated)</p>
+            <pre><code></code></pre>
+          </div>
+          <div class="tab-pane fade" id="item13" role="tabpanel">
+            <h1>Add Money Confirmation</h1>
+            <p>This operation is used to validate your deposit only when "extra" key is present on create Deposit request's response.</p>
+            <h2>Request</h2>
+            <p>
+              Request URL: <span class="badge text-bg-dark">https://www.awdpay.com/api/v1/deposits/confirm</span>
+              <br>
+              Method: <span class="badge text-bg-danger">POST</span>
+              <br>
+            </p>
+            <p class="h4">Headers</p>
+            <table class="table table-striped">
+              <thead class="table-dark">
+                <td>NAME</td>
+                <td>DESCRIPTION</td>
+              </thead>
+              <tr>
+                <td>Authorization</td>
+                <td>Authorization header used for oauth. Format of the header parameter follows the standard for Bearer. Oauth uses Bearer authentication type where the credential is the received access token.</td>
+              </tr>
+            </table>
+            <p class="h4">Body Parameters</p>
+            <table class="table table-striped">
+              <thead class="table-dark">
+                <td>NAME</td>
+                <td>TYPE</td>
+                <td>MANDATORY</td>
+                <td>DESCRIPTION</td>
+              </thead>
+              <tr>
+                <td>extra</td>
+                <td>string</td>
+                <td>Yes</td>
+                <td>value received by api "create deposit"</td>
+              </tr>
+              <tr>
+                <td>otp</td>
+                <td>string</td>
+                <td>Only for orange method</td>
+                <td>otp code received by your customer on their phone</td>
+              </tr>
+            </table>
+            <p class="h4">Exemple (curl)</p>
+            <pre><code>curl --request POST \
+  --url https://www.awdpay.com/api/v1/otp \
+  --header 'Authorization: Bearer [token_access]' \
+  --header 'Content-Type: application/x-www-form-urlencoded' \
+  --data otp=123456789 \
+  --data extra=46sqdqs4d45d5FDS4544==</code></pre>
+            <ul>
+            <li>[token_access] from generate token api</li>
+            </ul>
+            <h2>Responses</h2>
+            <p class="h4">200 OK</p>
+            <pre><code>{
+  "success": bool
+}</code></pre>
+            <p class="h4">400 Bad Request</p>
+            <pre><code>{
+  "message": "string"
+}</code></pre>
+            <p class="h4">401 Unauthorized</p>
+            <pre><code>{
+  "message": "string"
+}</code></pre>
+            <p class="h4">500 Internal Server Error</p>
+            <pre><code></code></pre>
+          </div>
+          <div class="tab-pane fade" id="item5" role="tabpanel">
+          <h1>Add money Status</h1>
+            <p>This operation is used to get the status of a request to add money. id is the id received after request to add money has been sucessfull.</p>
+            <h2>Request</h2>
+            <p>
+              Request URL: <span class="badge text-bg-dark">https://www.awdpay.com/api/v1/deposits/{id}</span>
+              <br>
+              Method: <span class="badge text-bg-info">GET</span>
+              <br>
+            </p>
+            <p class="h4">Headers</p>
+            <table class="table table-striped">
+              <thead class="table-dark">
+                <td>NAME</td>
+                <td>DESCRIPTION</td>
+              </thead>
+              <tr>
+                <td>Authorization</td>
+                <td>Authorization header used for oauth. Format of the header parameter follows the standard for Bearer. Oauth uses Bearer authentication type where the credential is the received access token.</td>
+              </tr>
+            </table>
+            <h2>Responses</h2>
+            <p class="h4">200 OK</p>
+            <pre><code>{
+  "status": string
+}</code></pre>
+            <p class="h4">401 Unauthorized</p>
+            <pre><code>{
+  "message": "string"
+}</code></pre>
+            <p class="h4">500 Internal Server Error</p>
+            <pre><code></code></pre>
+          </div>
+          <div class="tab-pane fade" id="item6" role="tabpanel">
+          <h1>Add Money List</h1>
+            <p>This operation is used to get the list of request to add money.</p>
+            <h2>Request</h2>
+            <p>
+              Request URL: <span class="badge text-bg-dark">https://www.awdpay.com/api/v1/deposits</span>
+              <br>
+              Method: <span class="badge text-bg-info">GET</span>
+              <br>
+            </p>
+            <p class="h4">Headers</p>
+            <table class="table table-striped">
+              <thead class="table-dark">
+                <td>NAME</td>
+                <td>DESCRIPTION</td>
+              </thead>
+              <tr>
+                <td>Authorization</td>
+                <td>Authorization header used for oauth. Format of the header parameter follows the standard for Bearer. Oauth uses Bearer authentication type where the credential is the received access token.</td>
+              </tr>
+            </table>
+            <h2>Responses</h2>
+            <p class="h4">200 OK</p>
+            <pre><code>{
+  "count": integer,
+  "data": [
+    {
+      "id": integer,
+      "status": string,
+      "payment_method": string,
+      "payment_status": bool,
+      "amount": integer,
+      "depositAmount": integer,
+      "currency": string,
+      "createdAt": date,
+      "updatedAt": date,
+      "userId": integer,
+      "agentId": integer
+    },
+    {</code></pre>
+            <p class="h4">401 Unauthorized</p>
+            <pre><code>{
+  "message": "string"
+}</code></pre>
+            <p class="h4">500 Internal Server Error</p>
+            <pre><code></code></pre>
+          </div>
+          <div class="tab-pane fade" id="item7" role="tabpanel">
+            <h1>Method List</h1>
+            <p>This operation is used to get the list of method with their corresponding value. Value to be used for request a withdraw</p>
+            <h2>Request</h2>
+            <p>
+              Request URL: <span class="badge text-bg-dark">https://www.awdpay.com/api/v1/methods</span>
+              <br>
+              Method: <span class="badge text-bg-info">GET</span>
+              <br>
+            </p>
+            <p class="h4">Headers</p>
+            <table class="table table-striped">
+              <thead class="table-dark">
+                <td>NAME</td>
+                <td>DESCRIPTION</td>
+              </thead>
+              <tr>
+                <td>Authorization</td>
+                <td>Authorization header used for oauth. Format of the header parameter follows the standard for Bearer. Oauth uses Bearer authentication type where the credential is the received access token.</td>
+              </tr>
+            </table>
+            <h2>Responses</h2>
+            <p class="h4">200 OK</p>
+            <pre><code>{
+  "data": [
+    {
+      "id": integer,
+      "name": string,
+      "minAmount": number,
+      "maxAmount": number,
+      "currency": string,
+      "fixedCharge": number,
+      "percentageCharge": number,
+      "active": bool,
+      "country": string
+    }
+  ],
+  "count": integer
+}</code></pre>
+            <p class="h4">401 Unauthorized</p>
+            <pre><code>{
+  "message": "string"
+}</code></pre>
+            <p class="h4">500 Internal Server Error</p>
+            <pre><code></code></pre>
+          </div>
+          <div class="tab-pane fade" id="item8" role="tabpanel">
+            <h1>Wi</h1>
+            <p>This operation is used to Withdraw money in your awdpay account.</p>
+            <h2>Request</h2>
+            <p>
+              Request URL: <span class="badge text-bg-dark">https://www.awdpay.com/api/v1/withdraws</span>
+              <br>
+              Method: <span class="badge text-bg-danger">POST</span>
+              <br>
+            </p>
+            <p class="h4">Headers</p>
+            <table class="table table-striped">
+              <thead class="table-dark">
+                <td>NAME</td>
+                <td>DESCRIPTION</td>
+              </thead>
+              <tr>
+                <td>Authorization</td>
+                <td>Authorization header used for oauth. Format of the header parameter follows the standard for Bearer. Oauth uses Bearer authentication type where the credential is the received access token.</td>
+              </tr>
+            </table>
+            <p class="h4">Body Parameters</p>
+            <table class="table table-striped">
+              <thead class="table-dark">
+                <td>NAME</td>
+                <td>TYPE</td>
+                <td>MANDATORY</td>
+                <td>DESCRIPTION</td>
+              </thead>
+              <tr>
+                <td>methodId</td>
+                <td>string</td>
+                <td>Yes</td>
+                <td>a value from method api</td>
+              </tr>
+              <tr>
+                <td>amount</td>
+                <td>number</td>
+                <td>Yes</td>
+                <td>amount to be send</td>
+              </tr>
+              <tr>
+                <td>currency</td>
+                <td>string</td>
+                <td>Yes</td>
+                <td>a value compatible with the payment method choosen</td>
+              </tr>
+              <tr>
+                <td>customer</td>
+                <td>string</td>
+                <td>Yes</td>
+                <td>email or phone number of your customer. It's used for transaction verification on your side.</td>
+              </tr>
+              <tr>
+                <td>number</td>
+                <td>string</td>
+                <td>No, under condition</td>
+                <td>For MTN, phone number with country code and without +. For other method, phone number without country code and +.<br> For ref: https://github.com/datasets/country-codes/blob/master/data/country-codes.csv (get country code on "Dial" column</td>
+              </tr>
+              <tr>
+                <td>extWallet</td>
+                <td>string</td>
+                <td>No, under condition</td>
+                <td>Wallet number from selected method. This parameter is mandatory for perfectmoney method</td>
+              </tr>
+            </table>
+            <h2>Responses</h2>
+            <p class="h4">200 OK</p>
+            <pre><code>{
+  "status": string,
+  "method": bool,
+  "params": array,
+  "amount": number,
+  "currency": string,
+  "fee": number,
+  "total": number,
+  "userId": integer,
+  "updatedAt": date,
+  "createdAt": date,
+}</code></pre>
+            <p class="h4">400 Bad Request</p>
+            <pre><code>{
+  "message": "string"
+}</code></pre>
+            <p class="h4">401 Unauthorized</p>
+            <pre><code>{
+  "message": "string"
+}</code></pre>
+            <p class="h4">500 Internal Server Error</p>
+            <pre><code></code></pre>
+          </div>
+          <div class="tab-pane fade" id="item9" role="tabpanel">
+          <h1>Withdraw Status</h1>
+            <p>This operation is used to get the status of a request to withdraw. id is the id received after request to withdraw has been sucessfull.</p>
+            <h2>Request</h2>
+            <p>
+              Request URL: <span class="badge text-bg-dark">https://www.awdpay.com/api/v1/withdraws/{id}</span>
+              <br>
+              Method: <span class="badge text-bg-info">GET</span>
+              <br>
+            </p>
+            <p class="h4">Headers</p>
+            <table class="table table-striped">
+              <thead class="table-dark">
+                <td>NAME</td>
+                <td>DESCRIPTION</td>
+              </thead>
+              <tr>
+                <td>Authorization</td>
+                <td>Authorization header used for oauth. Format of the header parameter follows the standard for Bearer. Oauth uses Bearer authentication type where the credential is the received access token.</td>
+              </tr>
+            </table>
+            <h2>Responses</h2>
+            <p class="h4">200 OK</p>
+            <pre><code>{
+  "status": string
+}</code></pre>
+            <p class="h4">401 Unauthorized</p>
+            <pre><code>{
+  "message": "string"
+}</code></pre>
+            <p class="h4">500 Internal Server Error</p>
+            <pre><code></code></pre>
+          </div>
+          <div class="tab-pane fade" id="item10" role="tabpanel">
+          <h1>Withdraw List</h1>
+            <p>This operation is used to get the list of requests to withdraw.</p>
+            <h2>Request</h2>
+            <p>
+              Request URL: <span class="badge text-bg-dark">https://www.awdpay.com/api/v1/withdraws</span>
+              <br>
+              Method: <span class="badge text-bg-info">GET</span>
+              <br>
+            </p>
+            <p class="h4">Headers</p>
+            <table class="table table-striped">
+              <thead class="table-dark">
+                <td>NAME</td>
+                <td>DESCRIPTION</td>
+              </thead>
+              <tr>
+                <td>Authorization</td>
+                <td>Authorization header used for oauth. Format of the header parameter follows the standard for Bearer. Oauth uses Bearer authentication type where the credential is the received access token.</td>
+              </tr>
+            </table>
+            <h2>Responses</h2>
+            <p class="h4">200 OK</p>
+            <pre><code>{
+  "count": integer,
+  "data": [
+    {
+      "id": integer,
+      "status": string,
+      "method": string,
+      "amount": number,
+      "fee": number,
+      "currency": string,
+      "createdAt": date
+    }
+  ]
+}</code></pre>
+            <p class="h4">401 Unauthorized</p>
+            <pre><code>{
+  "message": "string"
+}</code></pre>
+            <p class="h4">500 Internal Server Error</p>
+            <pre><code></code></pre>
+          </div>
+          <div class="tab-pane fade" id="item11" role="tabpanel">
+            <h1>Transfer Money</h1>
+            <p>This operation is used to send money to an awdpay wallet.</p>
+            <h2>Request</h2>
+            <p>
+              Request URL: <span class="badge text-bg-dark">https://www.awdpay.com/api/v1/transfers</span>
+              <br>
+              Method: <span class="badge text-bg-danger">POST</span>
+              <br>
+            </p>
+            <p class="h4">Headers</p>
+            <table class="table table-striped">
+              <thead class="table-dark">
+                <td>NAME</td>
+                <td>DESCRIPTION</td>
+              </thead>
+              <tr>
+                <td>Authorization</td>
+                <td>Authorization header used for oauth. Format of the header parameter follows the standard for Bearer. Oauth uses Bearer authentication type where the credential is the received access token.</td>
+              </tr>
+            </table>
+            <p class="h4">Body Parameters</p>
+            <table class="table table-striped">
+              <thead class="table-dark">
+                <td>NAME</td>
+                <td>TYPE</td>
+                <td>MANDATORY</td>
+                <td>DESCRIPTION</td>
+              </thead>
+              <tr>
+                <td>type</td>
+                <td>string</td>
+                <td>yes</td>
+                <td>take 1 possible value "send"</td>
+              </tr>
+              <tr>
+                <td>wallet</td>
+                <td>string</td>
+                <td>yes, if email is not used</td>
+                <td>a know wallet from awdpay (starting by X or E or D)</td>
+              </tr>
+              <tr>
+                <td>email</td>
+                <td>string</td>
+                <td>yes, if wallet is not used</td>
+                <td>a know email from awdpay</td>
+              </tr>
+              <tr>
+                <td>amount</td>
+                <td>number</td>
+                <td>yes</td>
+                <td>amount of the transaction</td>
+              </tr>
+              <tr>
+                <td>currency</td>
+                <td>string</td>
+                <td>yes</td>
+                <td>a value available from currency api</td>
+              </tr>
+            </table>
+            <h2>Responses</h2>
+            <p class="h4">200 OK</p>
+            <pre><code>{
+  "id": integer,
+  "type": string,
+  "amount": number,
+  "currency": string,
+  "email": string,
+  "trxId": string,
+  "userId": integer,
+  "updatedAt": date,
+  "createdAt": date
+}</code></pre>
+            <p class="h4">401 Unauthorized</p>
+            <pre><code>{
+  "message": "string"
+}</code></pre>
+            <p class="h4">500 Internal Server Error</p>
+            <pre><code></code></pre>
+          </div>
+          <div class="tab-pane fade" id="item12" role="tabpanel">
+            <h1>Currency list</h1>
+            <p>This operation is used to get all the currencies supported by our API. Please use uppercase value of the 3 digit currency symbol. MinAmout et MaxAmount let you know the amount of money you can use during transactions.</p>
+            <h2>Request</h2>
+            <p>
+              Request URL: <span class="badge text-bg-dark">https://www.awdpay.com/api/v1/currencies</span>
+              <br>
+              Method: <span class="badge text-bg-info">GET</span>
+              <br>
+            </p>
+            <p class="h4">Headers</p>
+            <table class="table table-striped">
+              <thead class="table-dark">
+                <td>NAME</
+                <td>DESCRIPTION</td>
+              </thead>
+              <tr>
+                <td>Authorization</td>
+                <td>Authorization header used for oauth. Format of the header parameter follows the standard for Bearer. Oauth uses Bearer authentication type where the credential is the received access token.</td>
+              </tr>
+            </table>
+            <p class="h4">Exemple (curl)</p>
+            <pre><code>curl --request GET \
+  --url https://www.awdpay.com/api/v1/currencies \
+  --header 'Authorization: Bearer [token_access]'</code></pre>
+            <ul>
+            <li>[token_access] from generate token api</li>
+            </ul>
+            <h2>Responses</h2>
+            <p class="h4">200 OK</p>
+            <pre><code>{
+  "count": integer,
+  "data": [
+    {
+      "name": string,
+      "symbol": string,
+      "crypto": bool,
+      "active": bool,
+      "minAmount": number,
+      "maxAmount": number
+    }
+  ]
+}</code></pre>
+            <p class="h4">401 Unauthorized</p>
+            <pre><code>{
+  "message": "string"
+}</code></pre>
+            <p class="h4">500 Internal Server Error</p>
+            <pre><code></code></pre>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+</body>
+</html>

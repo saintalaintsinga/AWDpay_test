@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AwdPay API Documentation</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
+  <link href="/static/app.css" rel="stylesheet">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+      <a class="navbar-brand" href="#">
+        <img class="d-block mx-auto" src="https://www.awdpay.com/api/public/logo-1655717095382-127474816.png" alt="" height="40" >
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="/">Home</a>
+          </li>
+          <li class="nav-item">
+
+            <a class="nav-link active" href="/api">Documentation</a>
+          </li>
+        </ul>
+        <div><a type="button" class="btn btn-primary" href="https://www.awdpay.com/dashboard">Dashboard</a></div>
+      </div>
+    </div>
+  </nav>
+  <div class="container">
+    <div class="row">
+      <aside class="col-lg-3 mt-3">
+        <ul class="nav flex-column nav-pills">
+          <p class="list-group">Checkout</p>
+          <li class="nav-item active" role="tab" data-bs-toggle="pill" data-bs-target="#item1" href="#">initiate</li>
+          <li class="nav-item" role="tab" data-bs-toggle="pill" data-bs-target="#item2" href="#">Verify</li>
+          <p class="list-group">Disbursement</p>
+          <li class="nav-item" role="tab" data-bs-toggle="pill" data-bs-target="#item3" href="#">initiate</li>
+          <li class="nav-item" role="tab" data-bs-toggle="pill" data-bs-target="#item4" href="#">Verify</li>
+        </ul>
+      </aside>
+      <main class="col-lg-9">
+        <div class="tab-content py-2">
+          <div class="tab-pane fade show active" id="item1" role="tabpanel">
+            <h1>Initiate checkout</h1>
+            <p>Initiate a payment request and return hosted checkout url</p>
+            <h2>Request</h2>
+            <p>
+              Request URL: <span class="badge text-bg-dark">https://www.awdpay.com/api/checkout/v2/initiate</span>
+              <br>
+              Method: <span class="badge text-bg-danger">POST</span>
+              <br>
+            </p>
+            <p class="h4">Headers</p>
+            <table class="table table-striped">
+              <thead class="table-dark">
+                <td>NAME</td>
+                <td>VALUE</td>
+                <td>DESCRIPTION</td>
+              </thead>
+              <tr>
+                <td>Content-Type</td>
+                <td>application/json</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>Authorization</td>
+                <td>Bearer {PrivateKey}</td>
+                <td>Get your {PrivateKey} on your merchant account on Awdpay platform.</td>
+              </tr>
+            </table>
+            <p class="h4">Body Parameters</p>
+            <table class="table table-striped">
+              <thead class="table-dark">
+                <td>NAME</td>
+                <td>TYPE</td>
+                <td>MANDATORY</td>
+                <td>DESCRIPTION</td>
+              </thead>
+              <tr>
+                <td>logo</td>
+                <td>string</td>
+                <td>Yes</td>
+                <td>display on the checkout page, an url</td>
+              </tr>
+              <tr>
+                <td>amount</td>
+                <td>number</td>
+                <td>Yes</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>currency</td>
+                <td>string</td>
+                <td>Yes</td>
+                <td>3 letter code (ex: USD or EUR or XOF)</td>
+              </tr>
+              <tr>
+                <td>customIdentifier</td>
+                <td>string</td>
+                <td>Yes</td>
+                <td>An ID to help you to verify the status later</td>
+              </tr>
+              <tr>
+                <td>callbackUrl</td>
+                <td>string</td>
+                <td>Yes</td>
+                <td>A notification URL when status change</td>
+              </tr>
+              <tr>
+                <td>successUrl</td>
+                <td>string</td>
+                <td>Yes</td>
+                <td>An url to redirect to once the paiement has been successful</td>
+              </tr>
+              <tr>
+                <td>failedUrl</td>
+                <td>string</td>
+                <td>Yes</td>
+                <td>An url to redirect to if the paiement is cancelled</td>
+              </tr>
+              <tr>
+                <td>test</td>
+                <td>boolean</td>
+                <td>Yes</td>
+                <td>Possible values: true or false</td>
+              </tr>
+            </table>
+            <p class="h4">Exemple (curl)</p>
+            <pre><code>curl --request POST \
+  --url https://www.awdpay.com/api/checkout/v2/initiate \
+  --header 'Content-Type: application/json' \
+  --data '{
+  "logo": "https://yoursite.com/images/logo.png",
+  "amount": 10,
+  "currency": "USD",
+  "customIdentifier": "ORDER32",
+  "callbackUrl": "https://webhook.site/448a4a2b-a442-44ce-b6a6-7e5eb8e17843",
+  "successUrl": "https://yoursite.com?status=success",
+  "failedUrl": "https://yoursite.com?status=failed",
+  "test": false
+}'</code></pre>
+            
+            <h2>Responses</h2>
+            <p class="h4">200 OK</p>
+            <pre><code>{
+  "success": "boolean",
+  "message": "string",
+  "redirectUrl":  "string"
+}</code></pre>
+            <p class="h4">4xx - invalid input, object invalid</p>
+            <pre><code></code></pre>
+            <p class="h4">5xx - server Error</p>
+            <pre><code></code></pre>
+            <h2>Callback DATA</h2>
+            <pre><code>{
+  "status": "string", //success or failed
+  "trxId": "string",
+  "amount":  "number",
+  "currency": "string",
+  "customIdentifier": "string",
+  "paidBy": "string",
+  "timestamp": "string"
+}</code></pre>
+          </div>
+          <div class="tab-pane fade" id="item2" role="tabpanel">
+            <h1>Verify checkout</h1>
+            <p>Check payment status via customIdentifier or TrxId.</p>
+            <h2>Request</h2>
+            <p>
+              Request URL: <span class="badge text-bg-dark">https://www.awdpay.com/api/checkout/v2/verify</span>
+              <br>
+              Method: <span class="badge text-bg-info">GET</span>
+              <br>
+            </p>
+            <p class="h4">Headers</p>
+            <table class="table table-striped">
+              <thead class="table-dark">
+                <td>NAME</td>
+                <td>VALUE</td>
+                <td>DESCRIPTION</td>
+              </thead>
+              <tr>
+                <td>Content-Type</td>
+                <td>application/json</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>Authorization</td>
+                <td>Bearer {PrivateKey}</td>
+                <td>Get your {PrivateKey} on your merchant account on Awdpay platform.</td>
+              </tr>
+            </table>
+            <p class="h4">URL Parameters</p>
+            <table class="table table-striped">
+              <thead class="table-dark">
+                <td>NAME</td>
+                <td>TYPE</td>
+                <td>MANDATORY</td>
+                <td>DESCRIPTION</td>
+              </thead>
+              <tr>
+                <td>trxId</td>
+                <td>string</td>
+                <td>Yes</td>
+                <td>Transaction ID of the initiated payment</td>
+              </tr>
+              <tr>
+                <td>customIdentifier</td>
+                <td>string</td>
+                <td>Yes</td>
+                <td>Custom Identifier of the initiated payment</td>
+              </tr>
+            </table>
+            <h2>Responses</h2>
+            <p class="h4">200 OK - Transaction Found</p>
+            <pre><code>{
+  "trxId": "16D5rEYGL0WZ",
+  "status": "success",
+  "amount": 9,
+  "currency": "USD",
+  "customIdentifier": "test@test.com",
+  "paidBy": "agency@gmail.com",
+  "test": false,
+  "updatedAt": "2023-07-11T10:16:47.000Z"
+}</code></pre>
+            <p class="h4">404 Not Found</p>
+            <pre><code></code></pre>
+            <p class="h4">5xx Internal Server Error</p>
+            <pre><code></code></pre>
+          </div>
+          <div class="tab-pane fade" id="item3" role="tabpanel">
+            <h1>Initiate disbursement</h1>
+            <p>Initiate a disbursement request and credit user balance</p>
+            <h2>Request</h2>
+            <p>
+              Request URL: <span class="badge text-bg-dark">https://www.awdpay.com/api/disbursement/v2/initiate</span>
+              <br>
+              Method: <span class="badge text-bg-danger">POST</span>
+              <br>
+            </p>
+            <p class="h4">Headers</p>
+            <table class="table table-striped">
+              <thead class="table-dark">
+                <td>NAME</td>
+                <td>VALUE</td>
+                <td>DESCRIPTION</td>
+              </thead>
+              <tr>
+                <td>Content-Type</td>
+                <td>application/json</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>Authorization</td>
+                <td>Bearer {PrivateKey}</td>
+                <td>Get your {PrivateKey} on your merchant account on Awdpay platform.</td>
+              </tr>
+            </table>
+            <p class="h4">Body Parameters</p>
+            <table class="table table-striped">
+              <thead class="table-dark">
+                <td>NAME</td>
+                <td>TYPE</td>
+                <td>MANDATORY</td>
+                <td>DESCRIPTION</td>
+              </thead>
+              <tr>
+                <td>customerEmail</td>
+                <td>string</td>
+                <td>Yes</td>
+                <td>valid Email of your customer</td>
+              </tr>
+              <tr>
+                <td>amount</td>
+                <td>number</td>
+                <td>Yes</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>currency</td>
+                <td>string</td>
+                <td>Yes</td>
+                <td>3 letter code (ex: USD or EUR or XOF)</td>
+              </tr>
+            </table>
+            <p class="h4">Exemple (curl)</p>
+            <pre><code>curl --request POST \
+  --url https://www.awdpay.com/api/disbursement/v2/initiate \
+  --header 'Content-Type: application/json' \
+  --data '{
+  "amount": 10,
+  "currency": "USD",
+  "customerEmail": "test@test.com"
+}'</code></pre>
+            <h2>Responses</h2>
+            <p class="h4">200 OK</p>
+            <pre><code>{
+  "success": true,
+  "message": "User credited with the balance",
+  "data": {
+    "trxId": "VXXXXXXXY",
+    "amount": 10,
+    "currency": "USD"
+  }
+}</code></pre>
+            <p class="h4">4xx - invalid input, object invalid</p>
+            <pre><code></code></pre>
+            <p class="h4">5xx - server Error</p>
+            <pre><code></code></pre>
+          </div>
+          <div class="tab-pane fade" id="item4" role="tabpanel">
+            <h1>Verify checkout</h1>
+            <p>Check disbursement status via TrxId</p>
+            <h2>Request</h2>
+            <p>
+              Request URL: <span class="badge text-bg-dark">https://www.awdpay.com/api/disbursement/v2/check</span>
+              <br>
+              Method: <span class="badge text-bg-info">GET</span>
+              <br>
+            </p>
+            <p class="h4">Headers</p>
+            <table class="table table-striped">
+              <thead class="table-dark">
+                <td>NAME</td>
+                <td>VALUE</td>
+                <td>DESCRIPTION</td>
+              </thead>
+              <tr>
+                <td>Content-Type</td>
+                <td>application/json</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>Authorization</td>
+                <td>Bearer {PrivateKey}</td>
+                <td>Get your {PrivateKey} on your merchant account on Awdpay platform.</td>
+              </tr>
+            </table>
+            <p class="h4">URL Parameters</p>
+            <table class="table table-striped">
+              <thead class="table-dark">
+                <td>NAME</td>
+                <td>TYPE</td>
+                <td>MANDATORY</td>
+                <td>DESCRIPTION</td>
+              </thead>
+              <tr>
+                <td>trxId</td>
+                <td>string</td>
+                <td>Yes</td>
+                <td>Transaction ID of the initiated payment</td>
+              </tr>
+            </table>
+            <h2>Responses</h2>
+            <p class="h4">200 OK - Transaction Found</p>
+            <pre><code></code></pre>
+            <p class="h4">404 Not Found</p>
+            <pre><code></code></pre>
+            <p class="h4">5xx Internal Server Error</p>
+            <pre><code></code></pre>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+</body>
+</html>
